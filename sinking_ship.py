@@ -136,12 +136,14 @@ def end_game(start):
     if total_score >= 350:
         final_message += "Rank S! Amazing play!"
     elif total_score >= 300:
-        final_message += "Rank A! Well played!"
+        final_message += "Rank A+! Well played!"
     elif total_score >= 275:
-        final_message += "Rank B. Good game."
+        final_message += "Rank A! Well played!"
     elif total_score >= 250:
-        final_message += "Rank C."
+        final_message += "Rank B. Good game."
     elif total_score >= 225:
+        final_message += "Rank C."
+    elif total_score >= 200:
         final_message += "Rank D. Better luck next time."
     else:
         final_message +="Rank F. Better luck next time."
