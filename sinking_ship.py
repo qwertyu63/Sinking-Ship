@@ -1,18 +1,45 @@
+from tkinter import *
+from tkinter import messagebox
 from random import randint
 from collections import Counter
+window = Tk()
+window.title("Sinking Ship")
+window.geometry('400x220')
 
-def roll_dice(dice=6, sides=6):
-    pool = []
-    count = 0
-    while count != dice:
-        pool.append(randint(1,sides))
-        count += 1
-    return sorted(pool)
+dice = [None,None,None,None,None,None]
+die = [None,None,None,None,None,None]
 
-def dice_counter(rolls, sides=6):
+die[0] = Button(window, text="[]", command= lambda:switch(0), bg = "white")
+die[0].grid(column=1, row=0)
+die[1] = Button(window, text="[]", command= lambda:switch(1), bg = "white")
+die[1].grid(column=1, row=1)
+die[2] = Button(window, text="[]", command= lambda:switch(2), bg = "white")
+die[2].grid(column=1, row=2)
+die[3] = Button(window, text="[]", command= lambda:switch(3), bg = "white")
+die[3].grid(column=1, row=3)
+die[4] = Button(window, text="[]", command= lambda:switch(4), bg = "white")
+die[4].grid(column=1, row=4)
+die[5] = Button(window, text="[]", command= lambda:switch(5), bg = "white")
+die[5].grid(column=1, row=5)
+
+holds = [False,False,False,False,False,False]
+
+def switch(index):
+    global holds
+    global dice
+    holds[index] =  not holds[index]
+    update_dice(dice)
+
+scores = {"Pair": 0, "Three of a Kind": 0, "Four of a Kind": 0,
+"Five of a Kind": 0, "Six of a Kind": 0, "Two Pair": 0, 
+"Three Pair": 0, "Full House": 0, "Double Trips": 0, 
+"Four and Pair": 0, "Three in a Row": 0, "Four in a Row": 0,
+"Five in a Row": 0, "Six in a Row": 0, "Wild": 0}
+
+def dice_counter(rolls):
     hold = Counter(rolls)
     result = []
-    for i in range(1,sides+1):
+    for i in range(1,7):
         result.append(hold.get(i, 0))
     return result
 
@@ -49,8 +76,18 @@ def sets_counter(counts):
     if runs >= 6:
         sets.append("Six in a Row")
     sets.append("Wild")
+    sets = field_strip(sets)
     return sets
-    
+
+def field_strip(fields):
+    global scores
+    hold = []
+    for x in fields:
+        if scores[x] == 0:
+            hold.append(x)
+    return hold
+
+
 def run_counter(counts):
     streak = 0
     array = []
@@ -63,103 +100,162 @@ def run_counter(counts):
     array.append(streak)
     return max(array)
 
-def reroll(rolls):
-    p_f = False
-    while not p_f:
-        print(*rolls, sep=", ")
-        hold = input("Keep (no spaces, - keeps all): ")
-        if hold == "-":
-            keep = rolls
-            break
-        keep = []
-        for n in hold:
-            keep.append(int(n))
-        p_f = reroll_check(rolls, keep)
-        if not p_f:
-            print("You didn't roll that.")
-    unheld = 6 - len(keep)
-    rolls = roll_dice(unheld)
-    rolls += keep
-    return sorted(rolls)
-
-def reroll_check(rolls, keep):
-    hold = rolls
-    for value in keep:
-        if value in hold:
-            hold.remove(value)
+def update_dice(dice):
+    global die
+    for n, i, lock in zip(dice, die, holds):
+        if lock:
+            i.configure(text="X ["+str(n)+"] X", bg = "lightgrey")
         else:
-            return False
-    return True
+            i.configure(text="["+str(n)+"]", bg = "white")
 
-scores = {"Pair": 0, "Three of a Kind": 0, "Four of a Kind": 0,
-"Five of a Kind": 0, "Six of a Kind": 0, "Two Pair": 0, 
-"Three Pair": 0, "Full House": 0, "Double Trips": 0, 
-"Four and Pair": 0, "Three in a Row": 0, "Four in a Row": 0,
-"Five in a Row": 0, "Six in a Row": 0, "Wild": 0}
-total_score = 0
+def roll_dice():
+    pool = []
+    relock = []
+    global dice
+    global holds
+    for die, hold in zip(dice, holds):
+        if hold == True:
+            pool.append(die)
+            relock.append(die)
+        else:
+            pool.append(randint(1,6))
+    dice = sorted(pool)
+    for n in range(0,6):
+        holds[n] = False
+    for n, i in zip(dice, range(0,6)):
+        if n in relock:
+            holds[i] = True
+            relock.remove(n)
+    return sorted(pool)
 
-def print_scores(score_list):
-    for item in score_list:
-        print(item + ": " + str(score_list[item]))
+rerolls = 2
 
-def score(rolls, field):
+def end_game(start):
+    final_message = start
+    total_score = sum(scores.values())
+    final_message += "\nFinal Score: "+str(total_score)+"\n"
+    if total_score >= 350:
+        final_message += "Rank S! Amazing play!"
+    elif total_score >= 300:
+        final_message += "Rank A! Well played!"
+    elif total_score >= 275:
+        final_message += "Rank B. Good game."
+    elif total_score >= 250:
+        final_message += "Rank C."
+    elif total_score >= 225:
+        final_message += "Rank D. Better luck next time."
+    else:
+        final_message +="Rank F. Better luck next time."
+    messagebox.showinfo('Game Over',final_message)
+    window.destroy()
+
+def click_roll():
+    global rerolls
+    rolls = roll_dice()
+    update_dice(rolls)
+    rerolls -= 1
+    reroll.configure(text="Reroll ["+str(rerolls)+"]")
+    counted_dice = dice_counter(rolls)
+    valid_sets = sets_counter(counted_dice)
+    print_scores(valid_sets)
+    if rerolls == 0:
+        reroll.configure(state='disabled')
+        if len(valid_sets) == 0:
+            end_game("You can not score. Your ship has sunk.")
+
+def bank(field):
+    global dice
     global scores
-    points = sum(rolls)
+    global rerolls
+    global holds
+    points = sum(dice)
     assert scores[field] == 0
     scores[field] = points
-
-def field_strip(fields):
-    hold = []
-    for x in fields:
-        if scores[x] == 0:
-            hold.append(x)
-    return hold
-    
-def turn():
-    rolls = roll_dice()
-    rolls = reroll(rolls)
-    rolls = reroll(rolls)
-    print(*rolls, sep=", ")
-    valid_sets = sets_counter(dice_counter(rolls))
-    valid_sets = field_strip(valid_sets)
-    if len(valid_sets) == 0:
-        print("You can not score. Your ship has sunk.")
-        return False
-    else:
-        print("\nYour score this round: "+str(sum(rolls))+".")
-        for i, x in enumerate(valid_sets,1):
-            print(str(i)+": "+x)
-        choice = int(input("Choose a field: "))
-        score(rolls, valid_sets[choice-1])
-        return True
-
-print("""Sinking Ship: Each turn, you will roll 6 dice.
-You may then pick some to keep and reroll the rest twice. 
-Then, you must pick a score field to use.
-Each field can only be used once, so plan wisely.
-The game ends if you can't score on any turn.
-Get the highest score you can.
-""")
-looping = True
-while looping:
-    print_scores(scores)
-    total_score = sum(scores.values())
-    print("Total: " + str(total_score)+"\n")
-    looping = turn()
-    print("")
+    for n in range(0,6):
+        holds[n] = False
+    rerolls += 3
+    if rerolls >= 11:
+        rerolls = 10
+    click_roll()
+    reroll.configure(state='normal')
     if min(scores.values()) != 0:
-        print("Every field is full. Your ship has sunk.")
-        break
-print_scores(scores)
-total_score = sum(scores.values())
-print("\nFinal Score: "+str(total_score))
-if total_score >= 300:
-    print("Rank A! Well played!")
-elif total_score >= 275:
-    print("Rank B. Good game.")
-elif total_score >= 250:
-    print("Rank C.")
-elif total_score >= 225:
-    print("Rank D. Better luck next time.")
-else:
-    print("Rank F. Better luck next time.")
+        end_game("Every field is full. Your ship will float.")
+
+def print_scores(valid):
+    global scoreboard
+    global scores
+    for item, label in zip(scores,scoreboard):
+        label.configure(text=item + ": " + str(scores[item]))
+        if item in valid:
+            label.configure(state='normal', bg = "lightyellow")
+        else:
+            label.configure(state='disabled', bg = "lightgrey")
+        if scores[item] != 0:
+            label.configure(state='disabled', bg = "white")
+    dietotal.configure(text="Roll Total: " + str(sum(dice)))
+    currentscore.configure(text="Total Score: " + str(sum(scores.values())))
+
+reroll = Button(window, text="Reroll [2]", command=click_roll)
+reroll.grid(column=1, row=7)
+
+window.grid_columnconfigure(0, minsize=10)
+window.grid_columnconfigure(2, minsize=20)
+window.grid_rowconfigure(6, minsize=20)
+
+scoreboard = [None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None]
+scoreboard[0] = Button(window, text="---", command= lambda:bank("Pair"))
+scoreboard[0].grid(column=4, row=0)
+scoreboard[1] = Button(window, text="---", command= lambda:bank("Three of a Kind"))
+scoreboard[1].grid(column=4, row=1)
+scoreboard[2] = Button(window, text="---", command= lambda:bank("Four of a Kind"))
+scoreboard[2].grid(column=4, row=2)
+scoreboard[3] = Button(window, text="---", command= lambda:bank("Five of a Kind"))
+scoreboard[3].grid(column=4, row=3)
+scoreboard[4] = Button(window, text="---", command= lambda:bank("Six of a Kind"))
+scoreboard[4].grid(column=4, row=4)
+
+scoreboard[5] = Button(window, text="---", command= lambda:bank("Two Pair"))
+scoreboard[5].grid(column=5, row=0)
+scoreboard[6] = Button(window, text="---", command= lambda:bank("Three Pair"))
+scoreboard[6].grid(column=5, row=1)
+scoreboard[7] = Button(window, text="---", command= lambda:bank("Full House"))
+scoreboard[7].grid(column=5, row=2)
+scoreboard[8] = Button(window, text="---", command= lambda:bank("Double Trips"))
+scoreboard[8].grid(column=5, row=3)
+scoreboard[9] = Button(window, text="---", command= lambda:bank("Four and Pair"))
+scoreboard[9].grid(column=5, row=4)
+
+scoreboard[10] = Button(window, text="---", command= lambda:bank("Three in a Row"))
+scoreboard[10].grid(column=6, row=0)
+scoreboard[11] = Button(window, text="---", command= lambda:bank("Four in a Row"))
+scoreboard[11].grid(column=6, row=1)
+scoreboard[12] = Button(window, text="---", command= lambda:bank("Five in a Row"))
+scoreboard[12].grid(column=6, row=2)
+scoreboard[13] = Button(window, text="---", command= lambda:bank("Six in a Row"))
+scoreboard[13].grid(column=6, row=3)
+scoreboard[14] = Button(window, text="---", command= lambda:bank("Wild"))
+scoreboard[14].grid(column=6, row=4)
+
+dietotal = Label(window, text="---")
+dietotal.grid(column=4, row=6)
+currentscore = Label(window, text="---")
+currentscore.grid(column=5, row=7)
+
+def help_button():
+    messagebox.showinfo('Sinking Ship Help','''You will roll and reroll 6 dice.
+Click the dice you want to keep and click Reroll.
+Click a score field to Bank your current roll total as points.
+Every time you Bank, you gain 2 more rerolls (max 9).
+Each field can only be used once, so plan wisely.
+If you reach 0 rerolls and can't bank, the game ends.
+Get the highest score you can.''')
+
+helpb = Button(window, text="Help", command=help_button)
+helpb.grid(column=6, row=7)
+
+startdice=roll_dice()
+update_dice(startdice)
+start_count = dice_counter(startdice)
+start_sets = sets_counter(start_count)
+print_scores(start_sets)
+window.mainloop()
