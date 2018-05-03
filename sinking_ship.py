@@ -4,23 +4,23 @@ from random import randint
 from collections import Counter
 window = Tk()
 window.title("Sinking Ship")
-window.geometry('400x220')
+window.geometry('400x230')
 
 dice = [None,None,None,None,None,None]
 die = [None,None,None,None,None,None]
 
 die[0] = Button(window, text="[]", command= lambda:switch(0), bg = "white")
-die[0].grid(column=1, row=0)
+die[0].grid(column=1, row=1)
 die[1] = Button(window, text="[]", command= lambda:switch(1), bg = "white")
-die[1].grid(column=1, row=1)
+die[1].grid(column=1, row=2)
 die[2] = Button(window, text="[]", command= lambda:switch(2), bg = "white")
-die[2].grid(column=1, row=2)
+die[2].grid(column=1, row=3)
 die[3] = Button(window, text="[]", command= lambda:switch(3), bg = "white")
-die[3].grid(column=1, row=3)
+die[3].grid(column=1, row=4)
 die[4] = Button(window, text="[]", command= lambda:switch(4), bg = "white")
-die[4].grid(column=1, row=4)
+die[4].grid(column=1, row=5)
 die[5] = Button(window, text="[]", command= lambda:switch(5), bg = "white")
-die[5].grid(column=1, row=5)
+die[5].grid(column=1, row=6)
 
 holds = [False,False,False,False,False,False]
 
@@ -86,7 +86,6 @@ def field_strip(fields):
         if scores[x] == 0:
             hold.append(x)
     return hold
-
 
 def run_counter(counts):
     streak = 0
@@ -196,50 +195,51 @@ def print_scores(valid):
     currentscore.configure(text="Total Score: " + str(sum(scores.values())))
 
 reroll = Button(window, text="Reroll [2]", command=click_roll)
-reroll.grid(column=1, row=7)
+reroll.grid(column=1, row=8)
 
 window.grid_columnconfigure(0, minsize=10)
 window.grid_columnconfigure(2, minsize=20)
+window.grid_rowconfigure(0, minsize=10)
 window.grid_rowconfigure(6, minsize=20)
 
 scoreboard = [None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None]
 scoreboard[0] = Button(window, text="---", command= lambda:bank("Pair"))
-scoreboard[0].grid(column=4, row=0)
+scoreboard[0].grid(column=3, row=1)
 scoreboard[1] = Button(window, text="---", command= lambda:bank("Three of a Kind"))
-scoreboard[1].grid(column=4, row=1)
+scoreboard[1].grid(column=3, row=2)
 scoreboard[2] = Button(window, text="---", command= lambda:bank("Four of a Kind"))
-scoreboard[2].grid(column=4, row=2)
+scoreboard[2].grid(column=3, row=3)
 scoreboard[3] = Button(window, text="---", command= lambda:bank("Five of a Kind"))
-scoreboard[3].grid(column=4, row=3)
+scoreboard[3].grid(column=3, row=4)
 scoreboard[4] = Button(window, text="---", command= lambda:bank("Six of a Kind"))
-scoreboard[4].grid(column=4, row=4)
+scoreboard[4].grid(column=3, row=5)
 
 scoreboard[5] = Button(window, text="---", command= lambda:bank("Two Pair"))
-scoreboard[5].grid(column=5, row=0)
+scoreboard[5].grid(column=4, row=1)
 scoreboard[6] = Button(window, text="---", command= lambda:bank("Three Pair"))
-scoreboard[6].grid(column=5, row=1)
+scoreboard[6].grid(column=4, row=2)
 scoreboard[7] = Button(window, text="---", command= lambda:bank("Full House"))
-scoreboard[7].grid(column=5, row=2)
+scoreboard[7].grid(column=4, row=3)
 scoreboard[8] = Button(window, text="---", command= lambda:bank("Double Trips"))
-scoreboard[8].grid(column=5, row=3)
+scoreboard[8].grid(column=4, row=4)
 scoreboard[9] = Button(window, text="---", command= lambda:bank("Four and Pair"))
-scoreboard[9].grid(column=5, row=4)
+scoreboard[9].grid(column=4, row=5)
 
 scoreboard[10] = Button(window, text="---", command= lambda:bank("Three in a Row"))
-scoreboard[10].grid(column=6, row=0)
+scoreboard[10].grid(column=5, row=1)
 scoreboard[11] = Button(window, text="---", command= lambda:bank("Four in a Row"))
-scoreboard[11].grid(column=6, row=1)
+scoreboard[11].grid(column=5, row=2)
 scoreboard[12] = Button(window, text="---", command= lambda:bank("Five in a Row"))
-scoreboard[12].grid(column=6, row=2)
+scoreboard[12].grid(column=5, row=3)
 scoreboard[13] = Button(window, text="---", command= lambda:bank("Six in a Row"))
-scoreboard[13].grid(column=6, row=3)
+scoreboard[13].grid(column=5, row=4)
 scoreboard[14] = Button(window, text="---", command= lambda:bank("Wild"))
-scoreboard[14].grid(column=6, row=4)
+scoreboard[14].grid(column=5, row=5)
 
 dietotal = Label(window, text="---")
-dietotal.grid(column=4, row=6)
+dietotal.grid(column=3, row=7)
 currentscore = Label(window, text="---")
-currentscore.grid(column=5, row=7)
+currentscore.grid(column=4, row=8)
 
 def help_button():
     messagebox.showinfo('Sinking Ship Help','''You will roll and reroll 6 dice.
@@ -251,7 +251,7 @@ If you reach 0 rerolls and can't bank, the game ends.
 Get the highest score you can.''')
 
 helpb = Button(window, text="Help", command=help_button)
-helpb.grid(column=6, row=7)
+helpb.grid(column=5, row=8)
 
 startdice=roll_dice()
 update_dice(startdice)
