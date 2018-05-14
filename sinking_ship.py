@@ -130,6 +130,14 @@ def roll_dice():
 rerolls = 2
 
 def end_game(start):
+    global scoreboard
+    global scores
+    global reset_trigger
+    for item, label in zip(scores,scoreboard):
+        label.configure(text=item + ": " + str(scores[item]))
+        label.configure(state='disabled', bg = "white")
+    helpb.configure(text="Reset")
+    reset_trigger = True
     final_message = start
     total_score = sum(scores.values())
     final_message += "\nFinal Score: "+str(total_score)+"\n"
@@ -148,7 +156,6 @@ def end_game(start):
     else:
         final_message +="Rank F. Better luck next time."
     messagebox.showinfo('Game Over',final_message)
-    window.destroy()
 
 def click_roll():
     global rerolls
@@ -243,8 +250,13 @@ dietotal.grid(column=3, row=7)
 currentscore = Label(window, text="---")
 currentscore.grid(column=4, row=8)
 
+reset_trigger = False
+
 def help_button():
-    messagebox.showinfo('Sinking Ship Help','''You will roll and reroll 6 dice.
+    if reset_trigger:
+        reset()
+    else:
+        messagebox.showinfo('Sinking Ship Help','''You will roll and reroll 6 dice.
 Click the dice you want to keep and click Reroll.
 Click a score field to Bank your current roll total as points.
 Every time you Bank, you gain 2 more rerolls (max 9).
@@ -252,12 +264,27 @@ Each field can only be used once, so plan wisely.
 If you reach 0 rerolls and can't bank, the game ends.
 Get the highest score you can.''')
 
+def reset():
+    global dice
+    global holds
+    global scores
+    global reset_trigger
+    dice = [None,None,None,None,None,None]
+    scores = {"Pair": 0, "Three of a Kind": 0, "Four of a Kind": 0,
+"Five of a Kind": 0, "Six of a Kind": 0, "Two Pair": 0, 
+"Three Pair": 0, "Full House": 0, "Double Trips": 0, 
+"Four and Pair": 0, "Three in a Row": 0, "Four in a Row": 0,
+"Five in a Row": 0, "Six in a Row": 0, "Wild": 0}
+    startdice=roll_dice()
+    update_dice(startdice)
+    start_count = dice_counter(startdice)
+    start_sets = sets_counter(start_count)
+    print_scores(start_sets)
+    helpb.configure(text="Help")
+    reset_trigger = False
+
 helpb = Button(window, text="Help", command=help_button)
 helpb.grid(column=5, row=8)
 
-startdice=roll_dice()
-update_dice(startdice)
-start_count = dice_counter(startdice)
-start_sets = sets_counter(start_count)
-print_scores(start_sets)
+reset()
 window.mainloop()
