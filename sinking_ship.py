@@ -4,7 +4,7 @@ from random import randint
 from collections import Counter
 window = Tk()
 window.title("Sinking Ship")
-window.geometry('400x230')
+window.geometry('410x230')
 
 dice = [None,None,None,None,None,None]
 die = [None,None,None,None,None,None]
@@ -269,13 +269,18 @@ def reset():
     global holds
     global scores
     global reset_trigger
+    global rerolls
     dice = [None,None,None,None,None,None]
+    holds = [False,False,False,False,False,False]
     scores = {"Pair": 0, "Three of a Kind": 0, "Four of a Kind": 0,
 "Five of a Kind": 0, "Six of a Kind": 0, "Two Pair": 0, 
 "Three Pair": 0, "Full House": 0, "Double Trips": 0, 
 "Four and Pair": 0, "Three in a Row": 0, "Four in a Row": 0,
 "Five in a Row": 0, "Six in a Row": 0, "Wild": 0}
     startdice=roll_dice()
+    rerolls = 2
+    reroll.configure(text="Reroll ["+str(rerolls)+"]")
+    reroll.configure(state='normal')
     update_dice(startdice)
     start_count = dice_counter(startdice)
     start_sets = sets_counter(start_count)
