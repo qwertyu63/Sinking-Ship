@@ -4,7 +4,7 @@ from random import randint
 from collections import Counter
 window = Tk()
 window.title("Sinking Ship")
-window.geometry('410x230')
+window.geometry('410x240')
 
 dice = [None,None,None,None,None,None]
 die = [None,None,None,None,None,None]
@@ -141,6 +141,18 @@ def end_game(start):
     final_message = start
     total_score = sum(scores.values())
     final_message += "\nFinal Score: "+str(total_score)+"\n"
+    try:
+        with open("hiscore.txt","r") as scorefile:
+            high_score = int(scorefile.read())
+            if total_score > high_score:
+                final_message +="New High Score!\n\n"
+                update_high_score(high_score)
+            else:
+                final_message +="High Score: "+str(high_score)+"\n\n"
+    except FileNotFoundError:
+        high_score = total_score
+        update_high_score(high_score)
+        final_message +="\n"
     if total_score >= 350:
         final_message += "Rank S! Amazing play!"
     elif total_score >= 300:
@@ -154,8 +166,12 @@ def end_game(start):
     elif total_score >= 200:
         final_message += "Rank D. Better luck next time."
     else:
-        final_message +="Rank F. Better luck next time."
+        final_message +="Rank F. Better luck next time."       
     messagebox.showinfo('Game Over',final_message)
+
+def update_high_score(value):
+    with open("hiscore.txt","w") as scorefile:
+        scorefile.write(str(value))
 
 def click_roll():
     global rerolls
@@ -249,6 +265,8 @@ dietotal = Label(window, text="---")
 dietotal.grid(column=3, row=7)
 currentscore = Label(window, text="---")
 currentscore.grid(column=4, row=8)
+highscore = Label(window, text="---")
+highscore.grid(column=4, row=9)
 
 reset_trigger = False
 
@@ -287,6 +305,13 @@ def reset():
     print_scores(start_sets)
     helpb.configure(text="Help")
     reset_trigger = False
+    try:
+        with open("hiscore.txt","r") as scorefile:
+            high_score = int(scorefile.read())
+            hiscorebox = "High Score: "+str(high_score)
+    except FileNotFoundError:
+        hiscorebox = ""
+    highscore.configure(text=hiscorebox)
 
 helpb = Button(window, text="Help", command=help_button)
 helpb.grid(column=5, row=8)
