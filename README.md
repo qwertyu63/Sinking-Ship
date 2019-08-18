@@ -3,6 +3,9 @@ A simple Yahtzee-like dice game programmed in Python.
 
 This entire project is just an excuse for me to learn new tools in Python. In this case, the main tool I've learned is Tkinter... which is very useful.
 
+# Screenshot
+![Image of Sinking Ship](https://github.com/qwertyu63/Sinking-Ship/blob/master/SinkingShipImage.png)
+
 # How to Play
 Just run the Python code. Tkinter is required. Click the Help button in game for further instructions or read them mirrored below.
 
