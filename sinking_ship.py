@@ -146,12 +146,11 @@ def end_game(start):
             high_score = int(scorefile.read())
             if total_score > high_score:
                 final_message +="New High Score!\n\n"
-                update_high_score(high_score)
+                update_high_score(total_score)
             else:
                 final_message +="High Score: "+str(high_score)+"\n\n"
     except FileNotFoundError:
-        high_score = total_score
-        update_high_score(high_score)
+        update_high_score(total_score)
         final_message +="\n"
     if total_score >= 350:
         final_message += "Rank S! Amazing play!"
