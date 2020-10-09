@@ -3,6 +3,8 @@ A simple Yahtzee-like dice game programmed in Python.
 
 This entire project is just an excuse for me to learn new tools in Python. In this case, the main tool I've learned is Tkinter... which is very useful.
 
+[![Run on Repl.it](https://repl.it/badge/github/qwertyu63/Sinking-Ship)](https://repl.it/github/qwertyu63/Sinking-Ship)
+
 # Screenshot
 ![Image of Sinking Ship](https://github.com/qwertyu63/Sinking-Ship/blob/master/SinkingShipImage.png)
 
