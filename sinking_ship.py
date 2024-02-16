@@ -171,8 +171,11 @@ def end_game(start):
     messagebox.showinfo('Game Over',final_message)
 
 def update_high_score(value):
-    with open("hiscore.txt","w") as scorefile:
-        scorefile.write(str(value))
+    try:
+        with open("hiscore.txt","w") as scorefile:
+            scorefile.write(str(value))
+    except PermissionError:
+        pass
 
 def click_roll():
     global rerolls
