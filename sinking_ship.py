@@ -152,6 +152,8 @@ def end_game(start):
     except FileNotFoundError:
         update_high_score(total_score)
         final_message +="\n"
+    except PermissionError:
+        final_message +="\n"
     if total_score >= 350:
         final_message += "Rank S! Amazing play!"
     elif total_score >= 300:
